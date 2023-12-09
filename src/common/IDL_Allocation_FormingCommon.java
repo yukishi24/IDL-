@@ -5,16 +5,21 @@ import java.nio.file.Path;
 
 public class IDL_Allocation_FormingCommon {
 
+	/**
+	 * 引数として受け取ったフォルダ内のファイルを配列に格納する
+	 * @param path
+	 * @return
+	 */
 	public static File[] getFiles(Path path) {
 		File file = castToFileInstance(path);
 		File result[] = file.listFiles();
 		
 		// log
-		for(int i;i<result.length;i++) {
-			System.out.println();
+		for(int i = 0; i<result.length; i++) {
+			System.out.println("ファイル" + ++i + " " + "→" + " " + result[i]);
 		}
 		
-		return file.listFiles();
+		return result;
 	}
 	
 	/**
