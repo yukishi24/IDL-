@@ -49,15 +49,8 @@ public class IDL_Allocation_FormingCommon {
 	public static File castToFileInstance(Path obj) {
 		// アップキャスト
 		Object tmp = (Object) obj;
-		try {
 			File result = (File) tmp;
 			return result;
-		} catch (ClassCastException e) {
-			System.out.println(SYSTEM_FINAL_ELEMENT.CAST_EXCEPTION);
-			printlog(SYSTEM_FINAL_ELEMENT.ERROR);
-			System.out.println(e.toString());
-			return null;
-		}
 	}
 
 	/**
@@ -85,11 +78,11 @@ public class IDL_Allocation_FormingCommon {
 		int forEnd = tempList.length - 1;
 		List<String> pathList = new ArrayList();
 		for (int i = 0; i < forEnd; i++) {
-			pathList.add(tempList[i]);
+			pathList.add(tempList[i] + "/");
 		}
 		pathList.add("subject");
 		for(String temp : pathList) {
-			result += temp + "/";
+			result += temp;
 		}
 		System.out.println(SYSTEM_FINAL_ELEMENT.AFTER + result);
 		return result;
