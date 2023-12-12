@@ -1,6 +1,5 @@
 package com.example.IDL_Allocation_Forming.common;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.example.IDL_Allocation_Forming.FINAL.SYSTEM_FINAL_ELEMENT;
@@ -16,6 +15,29 @@ public class OSModeLisner {
 	Scanner scanner = new Scanner(System.in);
 	final int WIN = 1;
 	final int MAC = 2;
+	int answer = 0; // ユーザーのアンサー
+
+	/**
+	 * @param answer セットする answer
+	 */
+	public void setAnswer(int answer) {
+		this.answer = answer;
+	}
+
+	/**
+	 * answerのセッター：(scanner)
+	 * 
+	 * @param answer セットする answer
+	 */
+	public void setAnswerByScanner() {
+		try {
+			// ユーザーに尋ねて回答を格納する処理
+			this.answer = scanner.nextInt();
+		} catch (Exception e) {
+			this.answer = SYSTEM_FINAL_ELEMENT.ERROR_STATUS_NO;
+			return;
+		}
+	}
 
 	/**
 	 * ユーザーにOSを尋ね結果を返す処理
@@ -25,76 +47,69 @@ public class OSModeLisner {
 	 */
 	public int userLiten() {
 		int userSelectNo = 0;
-		userSelectNo = doListen();
-		if(userSelectNo == SYSTEM_FINAL_ELEMENT.ERROR_STATUS_NO) {
-			doListen();
-		}
-		if (reListeUser(userSelectNo) == 2) {
-			doListen();
-		}
-		return userSelectNo;
+		
+		do {
+			listenContents();
+		} while (doReListen(this.answer));
+
+	}
+
+	/**
+	 * ユーザーに聞く内容
+	 */
+	public void listenContents() {
+		int result = 0;
+		final int beyondExpectationsNo = 0;// 想定外の値
+		final int nonMumeric = -1;// 数値以外の場合の値
+
+		do {
+			result = questionOS();
+			switch (result) {
+			case beyondExpectationsNo:
+				System.out.println(SYSTEM_FINAL_ELEMENT.RELESTENMESSAGE);
+				break;
+			case nonMumeric:
+				System.out.println(SYSTEM_FINAL_ELEMENT.OSEXCEPTION_MESSEGE);
+				break;
+			default:
+				break;
+			}
+		} while (result != 1 || result != 2);
+		setAnswer(result);
 	}
 
 	/**
 	 * 選択肢OS表示メソッド
 	 */
-	public int doListen() {
+	public int questionOS() {
+
+		// 質問文
 		System.out.println(SYSTEM_FINAL_ELEMENT.USERLISTEN_MESSAGE);
 		System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_OS_MESSAGE_WIN);
 		System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_OS_MESSAGE_MAC);
-		int userSelectNo = -1;
-		try {
-			userSelectNo = scanner.nextInt();
-		} catch (InputMismatchException e) {
-			// TODO: handle exception
-			e.toString();
-			System.out.println(SYSTEM_FINAL_ELEMENT.ERROR_WORD);
-			return SYSTEM_FINAL_ELEMENT.ERROR_STATUS_NO;
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.toString();
-			return SYSTEM_FINAL_ELEMENT.ERROR_STATUS_NO;
-		}
-		
-		
-		
-		if (!(chkUserSelectedNo(userSelectNo))) {
-			System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_USER_ERROR_NO);
-			userLiten();
-		}
-		return userSelectNo;
+
+		setAnswerByScanner();
+
+		// ユーザーの答えチェック処理
+		chkUserSelectedNo(this.answer);
+		return this.answer;
 	}
 
 	/**
 	 * ユーザーが選択した番号のチェック
 	 * 
-	 * @param no ユーザー選択番号
-	 * @return TRUE : エラーなし<br>
-	 *         FALSE : エラーあり
+	 * @param no
 	 */
-	public boolean chkUserSelectedNo(int no) {
+	public void chkUserSelectedNo(int no) {
+		boolean result = false;
 		if (no == WIN || no == MAC) {
-			return true;
+			setAnswer(no);
 		}
-		return false;
-	}
-
-	/**
-	 * 再度OSの確認を行う
-	 * 
-	 * @param no OS番号<br>
-	 *           1 : Windows<br>
-	 *           2 : Mac
-	 * @return 1 : 次の処理へ<br>
-	 *         2 : 再度ユーザーへOSの選択を行う
-	 */
-	public int reListeUser(int no) {
-		int answerNo = doReListen(no);
-		if (!(answerNo == 1 || answerNo == 2)) {
-			System.out.println(SYSTEM_FINAL_ELEMENT.RELESTENMESSAGE);
-			doReListen(no);
+		result = false;
+		if (!result) {
+			System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_USER_ERROR_NO);
+			setAnswer(0);
 		}
-		return answerNo;
 	}
 
 	/**
@@ -113,6 +128,7 @@ public class OSModeLisner {
 		System.out.println("お使いのOSは、" + OS + "でお間違いないですか？");
 		System.out.println(SYSTEM_FINAL_ELEMENT.RELITEN1);
 		System.out.println(SYSTEM_FINAL_ELEMENT.RELITEN2);
-		return scanner.nextInt();
+		setAnswerByScanner();
+
 	}
 }
