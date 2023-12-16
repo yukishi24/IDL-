@@ -1,5 +1,6 @@
 package com.example.IDL_Allocation_Forming.common;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.example.IDL_Allocation_Forming.FINAL.SYSTEM_FINAL_ELEMENT;
@@ -33,8 +34,11 @@ public class OSModeLisner {
 		try {
 			// ユーザーに尋ねて回答を格納する処理
 			this.answer = scanner.nextInt();
-		} catch (Exception e) {
+		} catch (InputMismatchException e) {
 			this.answer = SYSTEM_FINAL_ELEMENT.ERROR_STATUS_NO;
+			return;
+		}
+		catch (NoSuchFieldError e) {
 			return;
 		}
 	}
@@ -47,69 +51,64 @@ public class OSModeLisner {
 	 */
 	public int userLiten() {
 		int userSelectNo = 0;
-		
-		do {
-			listenContents();
-		} while (doReListen(this.answer));
-
+		return listenContents();
 	}
 
 	/**
 	 * ユーザーに聞く内容
 	 */
-	public void listenContents() {
-		int result = 0;
+	public int listenContents() {
+		int resultNo = 0;
+		boolean resultBoo = false;
 		final int beyondExpectationsNo = 0;// 想定外の値
 		final int nonMumeric = -1;// 数値以外の場合の値
 
-		do {
-			result = questionOS();
-			switch (result) {
-			case beyondExpectationsNo:
-				System.out.println(SYSTEM_FINAL_ELEMENT.RELESTENMESSAGE);
-				break;
-			case nonMumeric:
-				System.out.println(SYSTEM_FINAL_ELEMENT.OSEXCEPTION_MESSEGE);
-				break;
-			default:
-				break;
-			}
-		} while (result != 1 || result != 2);
-		setAnswer(result);
+		resultNo = questionOS();
+		resultBoo = !chkUserAnswer();
+		for (int i = 0; resultBoo; i++) {
+			resultNo = questionOS();
+			resultBoo = !chkUserAnswer();
+		}
+		System.out.println("hello");
+		setAnswer(resultNo);
+		return resultNo;
 	}
 
 	/**
-	 * 選択肢OS表示メソッド
+	 * ユーザー入力値チェック<br>
+	 * チェック内容<br>
+	 * １：ユーザーの入力値が数字以外かのチェック<br>
+	 * ２：ユーザーの入力値が1 or 2かどうかのチェック
+	 * 
+	 * @return TRUE：エラーなし<br>
+	 *         FALSE：エラーあり
+	 */
+	private boolean chkUserAnswer() {
+		// 0チェック ※ユーザーが数値以外を入力するとanswerに-1を格納してある。
+		if (this.answer == -1) {
+			System.out.println(SYSTEM_FINAL_ELEMENT.OSEXCEPTION_MESSEGE);
+			return false;
+		}
+		if (!(this.answer == 1 || this.answer == 2)) {
+			System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_USER_ERROR_NO);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * ユーザーの使用しているOSを聞く処理<br>
+	 * スキャナーで聞いた数値を戻り値として返す。
+	 * 
+	 * @return ユーザーの回答
 	 */
 	public int questionOS() {
-
 		// 質問文
 		System.out.println(SYSTEM_FINAL_ELEMENT.USERLISTEN_MESSAGE);
 		System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_OS_MESSAGE_WIN);
 		System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_OS_MESSAGE_MAC);
-
 		setAnswerByScanner();
-
-		// ユーザーの答えチェック処理
-		chkUserSelectedNo(this.answer);
 		return this.answer;
-	}
-
-	/**
-	 * ユーザーが選択した番号のチェック
-	 * 
-	 * @param no
-	 */
-	public void chkUserSelectedNo(int no) {
-		boolean result = false;
-		if (no == WIN || no == MAC) {
-			setAnswer(no);
-		}
-		result = false;
-		if (!result) {
-			System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_USER_ERROR_NO);
-			setAnswer(0);
-		}
 	}
 
 	/**
@@ -129,6 +128,6 @@ public class OSModeLisner {
 		System.out.println(SYSTEM_FINAL_ELEMENT.RELITEN1);
 		System.out.println(SYSTEM_FINAL_ELEMENT.RELITEN2);
 		setAnswerByScanner();
-
+		return this.answer;
 	}
 }

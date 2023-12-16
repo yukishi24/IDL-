@@ -40,6 +40,7 @@ public class IDL_Allocation_Forming_Main {
 		File folder = new File("");
 		int OSno = 0;
 		OSno = lisner.userLiten();
+		System.out.println("処理が正常。");
 		// 開始ログ
 		IDL_Allocation_FormingCommon.printlog(SYSTEM_FINAL_ELEMENT.START);
 		// パス成形
