@@ -1,6 +1,5 @@
 package com.example.IDL_Allocation_Forming.common;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.example.IDL_Allocation_Forming.FINAL.SYSTEM_FINAL_ELEMENT;
@@ -13,7 +12,7 @@ import com.example.IDL_Allocation_Forming.FINAL.SYSTEM_FINAL_ELEMENT;
  */
 public class OSModeLisner {
 	// スキャナーインスタンス
-	Scanner scanner = new Scanner(System.in);
+	Scanner scanner;
 	final int WIN = 1;
 	final int MAC = 2;
 	int answer = 0; // ユーザーのアンサー
@@ -31,15 +30,15 @@ public class OSModeLisner {
 	 * @param answer セットする answer
 	 */
 	public void setAnswerByScanner() {
+		scanner = new Scanner(System.in);
 		try {
 			// ユーザーに尋ねて回答を格納する処理
 			this.answer = scanner.nextInt();
-		} catch (InputMismatchException e) {
+		} catch (Exception e) {
 			this.answer = SYSTEM_FINAL_ELEMENT.ERROR_STATUS_NO;
 			return;
-		}
-		catch (NoSuchFieldError e) {
-			return;
+		} finally {
+			scanner.close();
 		}
 	}
 
@@ -50,26 +49,13 @@ public class OSModeLisner {
 	 *         2 -> mac
 	 */
 	public int userLiten() {
-		int userSelectNo = 0;
-		return listenContents();
-	}
-
-	/**
-	 * ユーザーに聞く内容
-	 */
-	public int listenContents() {
 		int resultNo = 0;
 		boolean resultBoo = false;
-		final int beyondExpectationsNo = 0;// 想定外の値
-		final int nonMumeric = -1;// 数値以外の場合の値
 
 		resultNo = questionOS();
-		resultBoo = !chkUserAnswer();
-		for (int i = 0; resultBoo; i++) {
-			resultNo = questionOS();
-			resultBoo = !chkUserAnswer();
-		}
-		System.out.println("hello");
+		resultBoo = chkUserAnswer();
+		
+		System.out.println(this.answer);
 		setAnswer(resultNo);
 		return resultNo;
 	}
@@ -91,6 +77,7 @@ public class OSModeLisner {
 		}
 		if (!(this.answer == 1 || this.answer == 2)) {
 			System.out.println(SYSTEM_FINAL_ELEMENT.SELECT_USER_ERROR_NO);
+			this.answer = 0;
 			return false;
 		}
 		return true;
